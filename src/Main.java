@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013 Artox
+
+ * See the file LICENSE.txt for copying permission.
+ */
+
 import UI.InteractiveTerminal;
 
 public class Main {

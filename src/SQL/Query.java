@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2013 Artox
+
+ * See the file LICENSE.txt for copying permission.
+ */
+
 package SQL;
 
 // reperesents a query found in sql script
