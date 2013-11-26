@@ -11,6 +11,7 @@
 
 	<path id="classpath">
 		<pathelement location="${build.dir}/"/>
+		<pathelement location="${deps.dir}/mysql-connector-java-5.1.27-bin.jar"/>
 	</path>
 
 	<path id="classpath_tests">
@@ -26,7 +27,7 @@
 	</target>
 
 	<target name="compile" depends="init" description="compile source">
-		<javac srcdir="${src.dir}" destdir="${build.dir}"/>
+		<javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="classpath"/>
 	</target>
 
 	<target name="compile_tests" depends="compile" description="compile tests">
@@ -42,14 +43,17 @@
 			<!-- I have no clue where to place resources so that the junit-test can find them ... -->
 			<classpath refid="classpath_tests"/>
 			<test name="TrinityCore.DBUpdateTimestampTest"/>
+			<test name="SQL.SQLScriptReaderTest"/>
 		</junit>
 	</target>
 
 	<target name="jar" depends="compile" description="Create Executable JAR">
-		<jar destfile="DBUpdater.jar" basedir="${build.dir}" >
-		<manifest>
-			<attribute name="Main-Class" value="${main.class}"/>
-		</manifest>
+		<jar destfile="DBUpdater.jar" basedir="${build.dir}">
+			<fileset file="${deps.dir}/mysql-connector-java-5.1.27-bin.jar"/>
+			<manifest>
+				<attribute name="Main-Class" value="${main.class}"/>
+				<attribute name="Class-Path" value="mysql-connector-java-5.1.27-bin.jar ."/>
+			</manifest>
 		</jar>
 	</target>
 
