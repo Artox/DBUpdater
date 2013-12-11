@@ -24,11 +24,6 @@ public class MySQLClientWrapper implements Database {
 	private String username;
 	private String password;
 
-	@Override
-	public boolean init() {
-		return true;
-	}
-
 	public MySQLClientWrapper(Console console) {
 		this.console = console;
 		this.hostname = null;

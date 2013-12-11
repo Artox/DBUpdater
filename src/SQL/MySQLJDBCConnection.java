@@ -16,6 +16,7 @@ import java.sql.SQLException;
 import com.mysql.jdbc.Statement;
 
 public class MySQLJDBCConnection implements Database {
+	private static boolean driverLoaded = false;
 	private Console console;
 	private Connection conn;
 
@@ -24,26 +25,33 @@ public class MySQLJDBCConnection implements Database {
 		conn = null;
 	}
 
-	@Override
-	public boolean init() {
+	private void loadDriver() {
+		if(driverLoaded)
+			return;
+
 		try {
 			// The newInstance() call is a work around for some
 			// broken Java implementations
 
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 
-			return true;
+			driverLoaded = true;
 		} catch (Exception ex) {
 			// handle the error
 			ex.printStackTrace();
-
-			return false;
 		}
 	}
 
 	@Override
 	public boolean open(String hostname, String port,
 			String database, String username, String password) {
+		// load driver if necessary
+		loadDriver();
+
+		// if the driver failed to load we need to cancel
+		if(!driverLoaded)
+			return false;
+
 		try {
 			String jdbcpath = "jdbc:mysql://" + hostname + ":" + port + "/"
 					+ database;

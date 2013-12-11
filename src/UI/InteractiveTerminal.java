@@ -63,14 +63,8 @@ public class InteractiveTerminal {
 			// query database access
 			requestDatabaseInfo();
 
-			MySQLClientWrapper db = new MySQLClientWrapper(console);
-
-			// load mysql driver
-			check = db.init();
-			if (!check) {
-				console.printf("Failed to laod MySQL Driver!\n");
-				return;
-			}
+			// create database object
+			db = new MySQLClientWrapper(console);
 
 			// open database
 			check = db.open(sqlhostname, sqlport, sqldatabase, sqlusername,
@@ -78,8 +72,6 @@ public class InteractiveTerminal {
 
 			if (!check) {
 				console.printf("Failed to connect to the database!\n");
-			} else {
-				this.db = db;
 			}
 		}
 

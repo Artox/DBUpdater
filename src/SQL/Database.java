@@ -10,14 +10,6 @@ import java.nio.file.Path;
 
 public interface Database {
 	/**
-	 * This function is supposed to perform any required one-time initialization.
-	 * For Example, loading the MySQL JDBC Connector or checking if the client binary is available
-	 * For the Future: I think this method can be replaced by code in teh cosntrucotrs of classes that need it
-	 * @return wether initialization worked
-	 */
-	public boolean init();
-
-	/**
 	 * This function is supposed to prepare the execution of queries on the given database
 	 * @return wether the database could be opened
 	 */
