@@ -16,9 +16,6 @@
  *    ==================================================================================
  *
  *    Downloaded from the https://github.com/mybatis/mybatis-3 repository on 11 Dec 2013
- *
- *    Modified by Artox
- *    
  */
 
 package SQL;

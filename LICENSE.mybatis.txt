@@ -1,3 +1,5 @@
+This License applies to the code taken from teh MyBatis project.
+Currently they are: src/SQL/ScriptRunner.java; src/SQL/RuntimeSqlException.java
 
                                  Apache License
                            Version 2.0, January 2004
