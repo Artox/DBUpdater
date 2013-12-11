@@ -16,8 +16,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import SQL.Database;
 import SQL.MySQLClientWrapper;
-//import SQL.SQLDatabase;
 import TrinityCore.DBUpdate;
 import TrinityCore.Exceptions.DBUpdateInvalidFilenameException;
 import TrinityCore.Exceptions.DBUpdateNotAFileException;
@@ -32,8 +32,7 @@ public class InteractiveTerminal {
 	private String sqlusername;
 	private String sqlpassword;
 
-	// private SQLDatabase db;
-	private MySQLClientWrapper db;
+	private Database db;
 
 	private Path updatesfolder;
 
@@ -49,6 +48,8 @@ public class InteractiveTerminal {
 		sqldatabase = null;
 		sqlusername = null;
 		sqlpassword = null;
+		db = null;
+		updatesfolder = null;
 		updates = null;
 		first = 0;
 		last = 0;
@@ -57,22 +58,22 @@ public class InteractiveTerminal {
 	public void run() {
 		boolean check;
 
-		// load mysql driver
-		// check = SQLDatabase.init();
-		check = MySQLClientWrapper.init();
-		if (!check) {
-			console.printf("Failed to laod MySQL Driver!\n");
-			return;
-		}
-
 		check = false;
 		while (!check) {
 			// query database access
 			requestDatabaseInfo();
 
-			// SQLDatabase db = new SQLDatabase(console);
 			MySQLClientWrapper db = new MySQLClientWrapper(console);
-			check = db.connect(sqlhostname, sqlport, sqldatabase, sqlusername,
+
+			// load mysql driver
+			check = db.init();
+			if (!check) {
+				console.printf("Failed to laod MySQL Driver!\n");
+				return;
+			}
+
+			// open database
+			check = db.open(sqlhostname, sqlport, sqldatabase, sqlusername,
 					sqlpassword);
 
 			if (!check) {
@@ -115,6 +116,9 @@ public class InteractiveTerminal {
 		} else {
 			console.printf("Finished!\n");
 		}
+
+		// close database
+		db.close();
 	}
 
 	private void requestDatabaseInfo() {
@@ -231,7 +235,7 @@ public class InteractiveTerminal {
 	private boolean applySelectedUpdates() {
 		for (int i = first - 1; i < last; i++) {
 			DBUpdate u = updates.get(i);
-			boolean check = db.executeSQLScript(u.getPath());
+			boolean check = db.executeScript(u.getPath());
 			if (!check) {
 				return false;
 			}

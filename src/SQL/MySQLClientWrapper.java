@@ -16,7 +16,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.Path;
 
-public class MySQLClientWrapper {
+public class MySQLClientWrapper implements Database {
 	private Console console;
 	private String hostname;
 	private String port;
@@ -24,7 +24,8 @@ public class MySQLClientWrapper {
 	private String username;
 	private String password;
 
-	public static boolean init() {
+	@Override
+	public boolean init() {
 		return true;
 	}
 
@@ -37,7 +38,8 @@ public class MySQLClientWrapper {
 		this.password = null;
 	}
 
-	public boolean connect(String hostname, String port, String database,
+	@Override
+	public boolean open(String hostname, String port, String database,
 			String username, String password) {
 		this.hostname = hostname;
 		this.port = port;
@@ -47,7 +49,8 @@ public class MySQLClientWrapper {
 		return true;
 	}
 
-	public void disconnect() {
+	@Override
+	public void close() {
 		this.hostname = null;
 		this.port = null;
 		this.database = null;
@@ -55,7 +58,8 @@ public class MySQLClientWrapper {
 		this.password = null;
 	}
 
-	public boolean executeSQLScript(Path path) {
+	@Override
+	public boolean executeScript(Path path) {
 		console.printf("Executing Update %s ...   ", path.getFileName()
 				.toString());
 

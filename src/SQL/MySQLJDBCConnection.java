@@ -15,16 +15,17 @@ import java.sql.SQLException;
 
 import com.mysql.jdbc.Statement;
 
-public class SQLDatabase {
+public class MySQLJDBCConnection implements Database {
 	private Console console;
 	private Connection conn;
 
-	public SQLDatabase(Console console) {
+	public MySQLJDBCConnection(Console console) {
 		this.console = console;
 		conn = null;
 	}
 
-	public static boolean init() {
+	@Override
+	public boolean init() {
 		try {
 			// The newInstance() call is a work around for some
 			// broken Java implementations
@@ -40,7 +41,8 @@ public class SQLDatabase {
 		}
 	}
 
-	public boolean connectToMySQL(String hostname, String port,
+	@Override
+	public boolean open(String hostname, String port,
 			String database, String username, String password) {
 		try {
 			String jdbcpath = "jdbc:mysql://" + hostname + ":" + port + "/"
@@ -59,7 +61,8 @@ public class SQLDatabase {
 		}
 	}
 
-	public void disconnect() {
+	@Override
+	public void close() {
 		try {
 			conn.close();
 		} catch (SQLException e) {
@@ -70,36 +73,12 @@ public class SQLDatabase {
 		conn = null;
 	}
 
-	public boolean executeSQLScript(Path path) {
-		SQLScriptReader reader;
-		try {
-			reader = new SQLScriptReader(path);
-		} catch (FileNotFoundException e) {
-			return false;
-		}
+	@Override
+	public boolean executeScript(Path path) {
+		return false;
 
-		console.printf("Executing Update %s ...   ", path.getFileName()
-				.toString());
-
-		while (reader.hasNextQuery()) {
-			Query query = reader.nextQuery();
-			try {
-				Statement stmt = (Statement) conn.createStatement();
-				stmt.execute(query.getQuery());
-				stmt.close();
-			} catch (SQLException e) {
-				console.printf("Encountered error in query on line %d:\n",
-						query.getLineNumber());
-				console.printf("SQLException: %s\n", e.getMessage());
-				console.printf("SQLState: %s\n", e.getSQLState());
-				console.printf("SQLVendorError: %s\n", e.getErrorCode());
-				return false;
-			}
-
-		}
-
+		/* console.printf("Executing Update %s ...   ", path.getFileName().toString());
 		console.printf("done\n");
-
-		return true;
+		return true; */
 	}
 }
