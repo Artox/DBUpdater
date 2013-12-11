@@ -17,7 +17,6 @@ See the file LICENSE.txt for copying permission.
 
 	<path id="classpath">
 		<pathelement location="${build.dir}/"/>
-		<pathelement location="${deps.dir}/mysql-connector-java-5.1.27-bin.jar"/>
 	</path>
 
 	<path id="classpath_tests">
@@ -49,16 +48,17 @@ See the file LICENSE.txt for copying permission.
 			<!-- I have no clue where to place resources so that the junit-test can find them ... -->
 			<classpath refid="classpath_tests"/>
 			<test name="TrinityCore.DBUpdateTimestampTest"/>
-			<test name="SQL.SQLScriptReaderTest"/>
 		</junit>
 	</target>
 
 	<target name="jar" depends="compile" description="Create Executable JAR">
-		<jar destfile="DBUpdater.jar" basedir="${build.dir}">
-			<fileset file="${deps.dir}/mysql-connector-java-5.1.27-bin.jar"/>
+		<jar jarfile="DBUpdater.jar">
+			<fileset file="LICENSE.txt"/>
+			<fileset dir="${build.dir}"/>
+			<zipfileset src="${deps.dir}/mysql-connector-java-5.1.27-bin.jar" excludes="META-INF/*,META-INF/*/*"/>
+			<fileset dir="${deps.dir}" includes="*.txt"/>
 			<manifest>
 				<attribute name="Main-Class" value="${main.class}"/>
-				<attribute name="Class-Path" value="mysql-connector-java-5.1.27-bin.jar ."/>
 			</manifest>
 		</jar>
 	</target>

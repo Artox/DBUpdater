@@ -1,4 +1,4 @@
-The Libraries in this folder have been released by their creators under the following licenses:
+The Libraries used by this project have been released by their creators under the following licenses:
 
 hamcrest-core-1.3:				BSD
 junit-4.11.jar:					BSD

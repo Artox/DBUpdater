@@ -18,6 +18,7 @@ import java.util.Collections;
 
 import SQL.Database;
 import SQL.MySQLClientWrapper;
+import SQL.MySQLJDBCConnection;
 import TrinityCore.DBUpdate;
 import TrinityCore.Exceptions.DBUpdateInvalidFilenameException;
 import TrinityCore.Exceptions.DBUpdateNotAFileException;
@@ -64,7 +65,8 @@ public class InteractiveTerminal {
 			requestDatabaseInfo();
 
 			// create database object
-			db = new MySQLClientWrapper(console);
+			// db = new MySQLClientWrapper(console);
+			db = new MySQLJDBCConnection(console);
 
 			// open database
 			check = db.open(sqlhostname, sqlport, sqldatabase, sqlusername,

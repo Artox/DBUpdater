@@ -100,9 +100,10 @@ public class MySQLJDBCConnection implements Database {
 		InputStreamReader reader = new InputStreamReader(in);
 
 		ScriptRunner runner = new ScriptRunner(conn);
-		runner.setLogWriter(console.writer());
+		runner.setLogWriter(null);
 		runner.setErrorLogWriter(console.writer());
 		runner.setStopOnError(true);
+		runner.setSendFullScript(false);
 
 		console.printf("Executing Update %s ...   ", path.getFileName()
 				.toString());
