@@ -7,13 +7,15 @@
 package SQL;
 
 import java.io.Console;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-
-import com.mysql.jdbc.Statement;
 
 public class MySQLJDBCConnection implements Database {
 	private static boolean driverLoaded = false;
@@ -26,7 +28,7 @@ public class MySQLJDBCConnection implements Database {
 	}
 
 	private void loadDriver() {
-		if(driverLoaded)
+		if (driverLoaded)
 			return;
 
 		try {
@@ -43,13 +45,13 @@ public class MySQLJDBCConnection implements Database {
 	}
 
 	@Override
-	public boolean open(String hostname, String port,
-			String database, String username, String password) {
+	public boolean open(String hostname, String port, String database,
+			String username, String password) {
 		// load driver if necessary
 		loadDriver();
 
 		// if the driver failed to load we need to cancel
-		if(!driverLoaded)
+		if (!driverLoaded)
 			return false;
 
 		try {
@@ -83,10 +85,35 @@ public class MySQLJDBCConnection implements Database {
 
 	@Override
 	public boolean executeScript(Path path) {
-		return false;
+		// if the connection does not exist, fail
+		if (conn == null)
+			return false;
 
-		/* console.printf("Executing Update %s ...   ", path.getFileName().toString());
-		console.printf("done\n");
-		return true; */
+		File file = path.toFile();
+		InputStream in;
+		try {
+			in = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			console.printf("File %s not Found!\n", file.getName());
+			return false;
+		}
+		InputStreamReader reader = new InputStreamReader(in);
+
+		ScriptRunner runner = new ScriptRunner(conn);
+		runner.setLogWriter(console.writer());
+		runner.setErrorLogWriter(console.writer());
+		runner.setStopOnError(true);
+
+		console.printf("Executing Update %s ...   ", path.getFileName()
+				.toString());
+
+		try {
+			runner.runScript(reader);
+
+			console.printf("done\n");
+			return true;
+		} catch (RuntimeSqlException e) {
+			return false;
+		}
 	}
 }
