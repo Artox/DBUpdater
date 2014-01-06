@@ -10,5 +10,22 @@ public class Main {
 	public static void main(String[] args) {
 		InteractiveTerminal terminal = new InteractiveTerminal(System.console());
 		terminal.run();
+
+		/*
+		// Code to test-run the SQL script reader
+		try {
+			String path = "sample.sql";
+			SQL.Reader.ScriptReader reader = new SQL.Reader.ScriptReader(
+					new java.io.InputStreamReader(new java.io.FileInputStream(
+							new java.io.File(path))));
+			while (reader.parseNextQuery()) {
+				System.out.print(reader.getQuery());
+			}
+		} catch (java.io.FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (java.io.IOException e) {
+			e.printStackTrace();
+		}
+		*/
 	}
 }

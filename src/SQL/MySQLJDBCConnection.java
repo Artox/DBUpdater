@@ -10,12 +10,16 @@ import java.io.Console;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
+
+import SQL.Reader.ScriptReader;
 
 public class MySQLJDBCConnection implements Database {
 	private static boolean driverLoaded = false;
@@ -94,26 +98,28 @@ public class MySQLJDBCConnection implements Database {
 		try {
 			in = new FileInputStream(file);
 		} catch (FileNotFoundException e) {
-			console.printf("File %s not Found!\n", file.getName());
+			console.printf("failed: %s\n", e.getMessage());
 			return false;
 		}
-		InputStreamReader reader = new InputStreamReader(in);
-
-		ScriptRunner runner = new ScriptRunner(conn);
-		runner.setLogWriter(null);
-		runner.setErrorLogWriter(console.writer());
-		runner.setStopOnError(true);
-		runner.setSendFullScript(false);
-
-		console.printf("Executing Update %s ...   ", path.getFileName()
-				.toString());
-
+		ScriptReader reader = new ScriptReader(new InputStreamReader(in));
+		String query = "";
 		try {
-			runner.runScript(reader);
+			while (reader.parseNextQuery()) {
+				query = reader.getQuery();
 
-			console.printf("done\n");
+				// I guess this is pretty inefficient but I don't care for now
+				// Optimized code using batches and buffers and cookies is just
+				// so much more effort
+				Statement stmt = conn.createStatement();
+				stmt.execute(query);
+				stmt.close();
+			}
 			return true;
-		} catch (RuntimeSqlException e) {
+		} catch (IOException e) {
+			console.printf("failed: %s\n", e.getMessage());
+			return false;
+		} catch (SQLException e) {
+			console.printf("Query \"%s\" failed: %s\n", query, e.getMessage());
 			return false;
 		}
 	}

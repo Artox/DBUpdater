@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import SQL.Database;
-import SQL.MySQLClientWrapper;
+//import SQL.MySQLClientWrapper;
 import SQL.MySQLJDBCConnection;
 import TrinityCore.DBUpdate;
 import TrinityCore.Exceptions.DBUpdateInvalidFilenameException;
@@ -227,10 +227,14 @@ public class InteractiveTerminal {
 	}
 
 	private boolean applySelectedUpdates() {
-		for (int i = first - 1; i < last; i++) {
-			DBUpdate u = updates.get(i);
-			boolean check = db.executeScript(u.getPath());
-			if (!check) {
+		for(DBUpdate u : updates)
+		{
+			console.printf("Executing Update %s ...   ", u.getFileName().toString());
+
+			if (db.executeScript(u.getPath())) {
+				console.printf("done\n");
+			} else {
+				//console.printf("failed!\n");
 				return false;
 			}
 		}
