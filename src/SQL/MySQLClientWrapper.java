@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Artox
+ * Copyright (c) 2013 - 2014 Artox
 
  * See the file LICENSE.txt for copying permission.
  */
