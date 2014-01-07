@@ -102,11 +102,20 @@ public class MySQLJDBCConnection implements Database {
 			return false;
 		}
 		ScriptReader reader = new ScriptReader(new InputStreamReader(in));
+		reader.setSkipQuerySeparator(true);
+		reader.setSkipLeadingNewline(true);
+		reader.setSkipLeadingWhitespace(true);
 		String query = "";
 		try {
 			while (reader.parseNextQuery()) {
 				query = reader.getQuery();
 
+				// skip empty queries
+				if (query.isEmpty())
+					continue;
+
+				// console.printf("%s\n", query);
+				
 				// I guess this is pretty inefficient but I don't care for now
 				// Optimized code using batches and buffers and cookies is just
 				// so much more effort
@@ -116,9 +125,11 @@ public class MySQLJDBCConnection implements Database {
 			}
 			return true;
 		} catch (IOException e) {
+			e.printStackTrace();
 			console.printf("failed: %s\n", e.getMessage());
 			return false;
 		} catch (SQLException e) {
+			e.printStackTrace();
 			console.printf("Query \"%s\" failed: %s\n", query, e.getMessage());
 			return false;
 		}

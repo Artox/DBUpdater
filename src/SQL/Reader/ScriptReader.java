@@ -14,8 +14,36 @@ public class ScriptReader {
 	private Reader _reader;
 	private String _query;
 
+	// settings
+	private boolean _skipQuerySeparator;
+	private boolean _skipLeadingWhitespace;
+	private boolean _skipLeadingNewline;
+	private boolean _ignoreWindowsLineFeed;
+
 	public ScriptReader(Reader reader) {
 		_reader = reader;
+		_query = null;
+
+		_skipQuerySeparator = false;
+		_skipLeadingWhitespace = false;
+		_skipLeadingNewline = false;
+		_ignoreWindowsLineFeed = true;
+	}
+
+	public void setSkipQuerySeparator(boolean skip) {
+		_skipQuerySeparator = skip;
+	}
+
+	public void setSkipLeadingWhitespace(boolean skip) {
+		_skipLeadingWhitespace = skip;
+	}
+
+	public void setSkipLeadingNewline(boolean skip) {
+		_skipLeadingNewline = skip;
+	}
+
+	public void setIgnoreWindowsLineFeed(boolean skip) {
+		_ignoreWindowsLineFeed = skip;
 	}
 
 	/**
@@ -48,6 +76,14 @@ public class ScriptReader {
 
 		int c = _reader.read();
 		while (c != -1) {
+			// ignore windows-style line-feed
+			// it should cause no problem since \n is properly handled
+			// and \r should never come alone
+			if (_ignoreWindowsLineFeed && c == '\r') {
+				c = _reader.read();
+				continue;
+			}
+
 			// update trackers
 			tracker_querySeparator.update((char) c);
 			tracker_sstringSeparator.update((char) c);
@@ -67,8 +103,9 @@ public class ScriptReader {
 
 				// 1) check if the query ended
 				if (tracker_querySeparator.matches()) {
-					// apply the current character
-					buffer.append((char) c);
+					// apply the current character if wanted
+					if (!_skipQuerySeparator)
+						buffer.append((char) c);
 
 					// save the query
 					_query = buffer.toString();
@@ -115,16 +152,31 @@ public class ScriptReader {
 				}
 				// nothing special, just continue
 				else {
-					// apply the current character
-					buffer.append((char) c);
+					// check if we should skip a whitespace
+					if (_skipLeadingWhitespace && c == ' '
+							&& buffer.count() == 0) {
+						// skip
+					} else if (_skipLeadingNewline && c == '\n'
+							&& buffer.count() == 0) {
+						// skip
+					} else {
+						// apply the current character
+						buffer.append((char) c);
+					}
 				}
 				break;
 			case SLCOMMENT:
 				// looking for end of single-line-comment (newline)
 				if (tracker_slcommentTerminator.matches()) {
 					// comments are skipped
+
 					// but the newline is needed
-					buffer.append((char) c);
+					// unless its a trailing one AND should be skipped
+					if (_skipLeadingNewline && buffer.count() == 0) {
+						// skip
+					} else {
+						buffer.append((char) c);
+					}
 
 					state = ScriptReaderState.DEFAULT;
 				}

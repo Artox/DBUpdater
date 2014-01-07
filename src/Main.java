@@ -18,6 +18,7 @@ public class Main {
 			SQL.Reader.ScriptReader reader = new SQL.Reader.ScriptReader(
 					new java.io.InputStreamReader(new java.io.FileInputStream(
 							new java.io.File(path))));
+			reader.setSkipLeadingNewline(true);
 			while (reader.parseNextQuery()) {
 				System.out.print(reader.getQuery());
 			}
